@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Omzet Laundry</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal: #0D9D83;
+    --teal-light: #E6F6F3;
+    --teal-dark: #087060;
+    --amber: #E8940A;
+    --amber-light: #FEF5E1;
+    --blue: #2563EB;
+    --blue-light: #EEF4FF;
+    --bg: #F4F5F7;
+    --surface: #FFFFFF;
+    --surface-2: #F8F9FA;
+    --border: #E2E5EA;
+    --border-strong: #CDD2DA;
+    --text: #111827;
+    --text-2: #4B5563;
+    --text-3: #9CA3AF;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .page-wrapper {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--teal);
+    background: var(--teal-light);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .header-badge svg { width: 12px; height: 12px; }
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -.4px;
+    line-height: 1.2;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: var(--text-3);
+    margin-top: 4px;
+  }
+
+  /* Layout */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 640px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    h1 { font-size: 20px; }
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .card-title-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    flex-shrink: 0;
+  }
+
+  /* Form inputs */
+  .field-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+  .field-group:last-child { margin-bottom: 0; }
+  label.field-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+  .input-with-unit {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--surface);
+    transition: border-color .15s;
+  }
+  .input-with-unit:focus-within { border-color: var(--teal); }
+  .input-with-unit input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: var(--text);
+    background: transparent;
+    width: 100%;
+  }
+  .unit-tag {
+    background: var(--surface-2);
+    border-left: 1.5px solid var(--border-strong);
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
+    letter-spacing: .04em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Inline grid for machine inputs */
+  .machine-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .machine-pair label { font-size: 11px; font-weight: 600; color: var(--text-3); }
+
+  /* Sliders */
+  .slider-block { margin-bottom: 16px; }
+  .slider-block:last-child { margin-bottom: 0; }
+  .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .slider-label { font-size: 12px; font-weight: 600; color: var(--text-2); }
+  .slider-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--teal-dark);
+    background: var(--teal-light);
+    padding: 2px 8px;
+    border-radius: 6px;
+    min-width: 64px;
+    text-align: center;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--teal);
+    border: 3px solid white;
+    box-shadow: 0 0 0 1.5px var(--teal);
+    cursor: pointer;
+    transition: transform .1s;
+  }
+  input[type=range]:active::-webkit-slider-thumb { transform: scale(1.15); }
+  .slider-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+
+  /* Results grid */
+  .results-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  @media (max-width: 480px) { .results-row { grid-template-columns: 1fr 1fr; } }
+  .result-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+  .result-card.highlight {
+    background: var(--teal-light);
+    border-color: rgba(13,157,131,.25);
+  }
+  .result-card.highlight-amber {
+    background: var(--amber-light);
+    border-color: rgba(232,148,10,.2);
+  }
+  .result-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+  .result-card.highlight .result-val { color: var(--teal-dark); }
+  .result-card.highlight-amber .result-val { color: #875200; }
+  .result-lbl { font-size: 11px; color: var(--text-3); font-weight: 500; }
+  .result-card.highlight .result-lbl { color: var(--teal); }
+  .result-card.highlight-amber .result-lbl { color: var(--amber); }
+
+  /* Breakdown table */
+  .breakdown-table { width: 100%; border-collapse: collapse; }
+  .breakdown-table tr { border-top: 1px solid var(--border); }
+  .breakdown-table tr:first-child { border-top: none; }
+  .breakdown-table td { padding: 8px 0; font-size: 13px; vertical-align: middle; }
+  .breakdown-table td:last-child { text-align: right; font-family: 'DM Mono', monospace; font-weight: 500; }
+  .badge-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    margin-left: 6px;
+    letter-spacing: .03em;
+  }
+  .pill-teal { background: var(--teal-light); color: var(--teal-dark); }
+  .pill-amber { background: var(--amber-light); color: #875200; }
+
+  /* Cost form */
+  .cost-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+  }
+  .cost-row:first-child { border-top: none; padding-top: 0; }
+  .cost-label { font-size: 13px; color: var(--text-2); flex: 1; }
+  .cost-label small { display: block; font-size: 11px; color: var(--text-3); font-style: italic; margin-top: 1px; }
+  .cost-input-wrap {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 7px;
+    overflow: hidden;
+    background: var(--surface);
+    flex-shrink: 0;
+    transition: border-color .15s;
+  }
+  .cost-input-wrap:focus-within { border-color: var(--teal); }
+  .cost-prefix {
+    background: var(--surface-2);
+    border-right: 1.5px solid var(--border-strong);
+    padding: 6px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
+  }
+  .cost-input {
+    border: none;
+    outline: none;
+    padding: 6px 8px;
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: var(--text);
+    background: transparent;
+    width: 120px;
+    text-align: right;
+  }
+  .cost-computed { font-size: 11px; color: var(--text-3); }
+
+  /* Total row */
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    margin-top: 12px;
+    border: 1px solid var(--border);
+  }
+  .total-row.profit {
+    background: var(--teal-light);
+    border-color: rgba(13,157,131,.25);
+  }
+  .total-label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .total-row.profit .total-label { color: var(--teal-dark); }
+  .total-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .total-row.profit .total-val { color: var(--teal-dark); }
+  .margin-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    background: var(--teal);
+    color: white;
+    border-radius: 20px;
+    margin-left: 10px;
+  }
+
+  .note {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 10px;
+    line-height: 1.5;
+    padding: 8px 12px;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--border-strong);
+  }
+
+  /* Projection band */
+  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 480px) { .proj-grid { grid-template-columns: 1fr; } }
+  .proj-card {
+    text-align: center;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+  }
+  .proj-period { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-bottom: 6px; }
+  .proj-val { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; color: var(--blue); }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Section divider */
+  .section-gap { margin-bottom: 16px; }
+
+  /* Responsive tweaks */
+  @media (max-width: 640px) {
+    body { padding: 1rem .75rem 3rem; }
+    .results-row { grid-template-columns: 1fr 1fr; }
+    .proj-grid { grid-template-columns: 1fr; }
+    .cost-input { width: 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Business Calculator
+    </div>
+    <h1>Kalkulator Omzet Laundry</h1>
+    <p class="header-sub">Estimasi pendapatan & laba berdasarkan konfigurasi mesin dan harga layanan Anda</p>
+  </div>
+
+  <!-- Section 1: Konfigurasi Mesin -->
+  <div class="card section-gap">
+    <div class="card-title"><span class="card-title-dot"></span>Konfigurasi Mesin</div>
+    <div class="grid-2">
+      <!-- Mesin Cuci -->
+      <div>
+        <div class="field-group" style="margin-bottom:10px">
+          <label class="field-label">Mesin Cuci</label>
+        </div>
+        <div class="machine-pair">
+          <div class="field-group">
+            <label>Jumlah Unit</label>
+            <div class="input-with-unit">
+              <input type="number" id="washCount" value="2" min="1" max="20" oninput="recalc()">
+              <span class="unit-tag">unit</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Kapasitas/unit</label>
+            <div class="input-with-unit">
+              <input type="number" id="washCap" value="15" min="1" max="100" oninput="recalc()">
+              <span class="unit-tag">kg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Dryer -->
+      <div>
+        <div class="field-group" style="margin-bottom:10px">
+          <label class="field-label">Dryer</label>
+        </div>
+        <div class="machine-pair">
+          <div class="field-group">
+            <label>Jumlah Unit</label>
+            <div class="input-with-unit">
+              <input type="number" id="dryCount" value="2" min="0" max="20" oninput="recalc()">
+              <span class="unit-tag">unit</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Kapasitas/unit</label>
+            <div class="input-with-unit">
+              <input type="number" id="dryCap" value="8" min="1" max="100" oninput="recalc()">
+              <span class="unit-tag">kg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Harga Layanan & Operasional -->
+  <div class="grid-2">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title"><span class="card-title-dot"></span>Harga Layanan</div>
+      <div class="field-group">
+        <label class="field-label">Reguler (1–3 hari)</label>
+        <div class="input-with-unit">
+          <input type="number" id="priceReg" value="8000" min="0" oninput="recalc()">
+          <span class="unit-tag">Rp/kg</span>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Express (1 hari)</label>
+        <div class="input-with-unit">
+          <input type="number" id="priceExp" value="12000" min="0" oninput="recalc()">
+          <span class="unit-tag">Rp/kg</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title"><span class="card-title-dot"></span>Jam Operasional</div>
+      <div class="field-group">
+        <label class="field-label">Jam Buka</label>
+        <div class="input-with-unit">
+          <input type="time" id="openTime" value="08:00" oninput="recalc()" style="font-family: 'DM Mono', monospace;">
+          <span class="unit-tag">WIB</span>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Jam Tutup</label>
+        <div class="input-with-unit">
+          <input type="time" id="closeTime" value="21:00" oninput="recalc()" style="font-family: 'DM Mono', monospace;">
+          <span class="unit-tag">WIB</span>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Hari Kerja / Minggu</label>
+        <div class="input-with-unit">
+          <input type="number" id="workDays" value="7" min="1" max="7" oninput="recalc()">
+          <span class="unit-tag">hari</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Parameter Siklus -->
+  <div class="card section-gap">
+    <div class="card-title"><span class="card-title-dot"></span>Parameter Operasional</div>
+    <div class="grid-2">
+      <div>
+        <div class="slider-block">
+          <div class="slider-header">
+            <span class="slider-label">Utilisasi mesin</span>
+            <span class="slider-value" id="utilOut">80%</span>
+          </div>
+          <input type="range" id="utilPct" min="30" max="100" step="5" value="80" oninput="recalc()">
+          <div class="slider-hint">% kapasitas terisi per siklus</div>
+        </div>
+        <div class="slider-block">
+          <div class="slider-header">
+            <span class="slider-label">Waktu per siklus</span>
+            <span class="slider-value" id="cycleOut">90 mnt</span>
+          </div>
+          <input type="range" id="cycleMin" min="45" max="150" step="5" value="90" oninput="recalc()">
+          <div class="slider-hint">termasuk loading & unloading</div>
+        </div>
+      </div>
+      <div>
+        <div class="slider-block">
+          <div class="slider-header">
+            <span class="slider-label">Porsi layanan express</span>
+            <span class="slider-value" id="expressOut">30%</span>
+          </div>
+          <input type="range" id="expressPct" min="0" max="80" step="5" value="30" oninput="recalc()">
+          <div class="slider-hint">semakin besar, omzet naik</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Hasil Estimasi -->
+  <div class="card section-gap">
+    <div class="card-title"><span class="card-title-dot"></span>Estimasi Per Hari</div>
+    <div class="results-row">
+      <div class="result-card">
+        <div class="result-val" id="cyclesDay">—</div>
+        <div class="result-lbl">Siklus / mesin / hari</div>
+      </div>
+      <div class="result-card">
+        <div class="result-val" id="kgDay">—</div>
+        <div class="result-lbl">Total kg cucian / hari</div>
+      </div>
+      <div class="result-card highlight">
+        <div class="result-val" id="revDay">—</div>
+        <div class="result-lbl">Omzet per hari</div>
+      </div>
+    </div>
+
+    <table class="breakdown-table">
+      <tr>
+        <td style="color:var(--text-2)">Reguler <span class="badge-pill pill-teal" id="kgRegLabel">—</span></td>
+        <td id="revReg">—</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text-2)">Express <span class="badge-pill pill-amber" id="kgExpLabel">—</span></td>
+        <td id="revExp">—</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text-3); font-size:11px;">Kapasitas dryer per hari</td>
+        <td style="color:var(--text-3); font-size:11px;" id="dryerCap">—</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Section 5: Proyeksi -->
+  <div class="card section-gap">
+    <div class="card-title"><span class="card-title-dot"></span>Proyeksi Omzet</div>
+    <div class="proj-grid">
+      <div class="proj-card">
+        <div class="proj-period">Per Minggu</div>
+        <div class="proj-val" id="revWeek">—</div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-period">Per Bulan</div>
+        <div class="proj-val" id="revMonth">—</div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-period">Per Tahun</div>
+        <div class="proj-val" id="revYear">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Estimasi Biaya -->
+  <div class="card section-gap">
+    <div class="card-title"><span class="card-title-dot"></span>Estimasi Biaya Bulanan</div>
+    <p style="font-size:12px; color:var(--text-3); margin-bottom:12px;">Isi nominal biaya sesuai kondisi usaha Anda. Biaya berbasis % dihitung otomatis dari omzet bulanan.</p>
+
+    <!-- Biaya tetap -->
+    <div style="font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-3); margin-bottom:8px; margin-top:4px;">Biaya Tetap</div>
+
+    <div class="cost-row">
+      <div class="cost-label">
+        Gaji Karyawan
+        <small>Total semua karyawan</small>
+      </div>
+      <div class="cost-input-wrap">
+        <span class="cost-prefix">Rp</span>
+        <input class="cost-input" type="number" id="cSalary" value="3000000" oninput="recalc()">
+      </div>
+    </div>
+
+    <div class="cost-row">
+      <div class="cost-label">
+        Sewa Tempat
+        <small>Termasuk parkir, dll</small>
+      </div>
+      <div class="cost-input-wrap">
+        <span class="cost-prefix">Rp</span>
+        <input class="cost-input" type="number" id="cRent" value="2000000" oninput="recalc()">
+      </div>
+    </div>
+
+    <div class="cost-row">
+      <div class="cost-label">
+        Cicilan / Penyusutan Mesin
+        <small>Jika mesin kredit / beli tunai</small>
+      </div>
+      <div class="cost-input-wrap">
+        <span class="cost-prefix">Rp</span>
+        <input class="cost-input" type="number" id="cDepr" value="1500000" oninput="recalc()">
+      </div>
+    </div>
+
+    <div class="cost-row">
+      <div class="cost-label">
+        Lain-lain Tetap
+        <small>Internet, ATK, dll</small>
+      </div>
+      <div class="cost-input-wrap">
+        <span class="cost-prefix">Rp</span>
+        <input class="cost-input" type="number" id="cMisc" value="500000" oninput="recalc()">
+      </div>
+    </div>
+
+    <!-- Biaya variabel -->
+    <div style="font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-3); margin-top:18px; margin-bottom:8px;">Biaya Variabel (% dari Omzet)</div>
+
+    <div class="cost-row">
+      <div class="cost-label">
+        Listrik &amp; Air
+        <small>Est. <span id="utilCostEst" style="color:var(--teal)">—</span> / bln</small>
+      </div>
+      <div class="cost-input-wrap">
+        <input class="cost-input" type="number" id="cUtilPct" value="15" min="0" max="100" step="0.5" oninput="recalc()" style="width:60px">
+        <span class="cost-prefix" style="border-left:1.5px solid var(--border-strong); border-right:none; background:var(--surface-2)">%</span>
+      </div>
+    </div>
+
+    <div class="cost-row">
+      <div class="cost-label">
+        Detergen &amp; Bahan Cuci
+        <small>Est. <span id="supplyCostEst" style="color:var(--teal)">—</span> / bln</small>
+      </div>
+      <div class="cost-input-wrap">
+        <input class="cost-input" type="number" id="cSupplyPct" value="8" min="0" max="100" step="0.5" oninput="recalc()" style="width:60px">
+        <span class="cost-prefix" style="border-left:1.5px solid var(--border-strong); border-right:none; background:var(--surface-2)">%</span>
+      </div>
+    </div>
+
+    <!-- Totals -->
+    <div class="total-row" style="margin-top:16px">
+      <span class="total-label">Total Biaya</span>
+      <span class="total-val" id="totalCost">—</span>
+    </div>
+    <div class="total-row profit">
+      <span class="total-label">Laba Bersih Estimasi <span class="margin-badge" id="marginBadge">—%</span></span>
+      <span class="total-val" id="netProfit">—</span>
+    </div>
+
+    <div class="note">
+      ⚠️ Estimasi ini tidak termasuk pajak, biaya promosi, atau pengeluaran tak terduga. Gunakan sebagai panduan awal, bukan angka pasti.
+    </div>
+  </div>
+
+  <div class="footer">
+    Kalkulator Omzet Laundry &mdash; untuk keperluan estimasi bisnis
+  </div>
+</div>
+
+<script>
+function fmtRp(n) {
+  if (isNaN(n)) return '—';
+  if (n >= 1000000000) return 'Rp ' + (n/1000000000).toFixed(1).replace(/\.0$/,'') + ' M';
+  if (n >= 1000000) return 'Rp ' + (n/1000000).toFixed(1).replace(/\.0$/,'') + ' jt';
+  if (n >= 1000) return 'Rp ' + Math.round(n/1000) + ' rb';
+  return 'Rp ' + Math.round(n).toLocaleString('id-ID');
+}
+
+function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function setText(id, v) { document.getElementById(id).textContent = v; }
+
+function recalc() {
+  // Sync slider labels
+  document.getElementById('utilOut').textContent = getVal('utilPct') + '%';
+  document.getElementById('cycleOut').textContent = getVal('cycleMin') + ' mnt';
+  document.getElementById('expressOut').textContent = getVal('expressPct') + '%';
+
+  // Machine config
+  const washCount = getVal('washCount');
+  const washCap   = getVal('washCap');
+  const dryCount  = getVal('dryCount');
+  const dryCap    = getVal('dryCap');
+
+  // Hours
+  const openH  = document.getElementById('openTime').value || '08:00';
+  const closeH = document.getElementById('closeTime').value || '21:00';
+  const [oh, om] = openH.split(':').map(Number);
+  const [ch, cm] = closeH.split(':').map(Number);
+  const opMins = Math.max(0, (ch * 60 + cm) - (oh * 60 + om));
+  const opHours = opMins / 60;
+
+  // Cycle
+  const utilPct    = getVal('utilPct') / 100;
+  const cycleMin   = getVal('cycleMin');
+  const expressPct = getVal('expressPct') / 100;
+  const workDays   = getVal('workDays');
+
+  // Pricing
+  const priceReg = getVal('priceReg');
+  const priceExp = getVal('priceExp');
+
+  // Per machine per day
+  const cyclesPerMachine = Math.floor(opMins / cycleMin);
+  const kgPerCycle = washCap * utilPct;
+  const totalKgDay = cyclesPerMachine * kgPerCycle * washCount;
+
+  const kgExp = totalKgDay * expressPct;
+  const kgReg = totalKgDay * (1 - expressPct);
+
+  const revDay   = kgReg * priceReg + kgExp * priceExp;
+  const revWeek  = revDay * workDays;
+  const revMonth = revDay * 30;
+  const revYear  = revDay * 365;
+
+  // Dryer capacity
+  const dryPerDay = (opMins / 45) * dryCount * dryCap * utilPct;
+
+  setText('cyclesDay', cyclesPerMachine + 'x');
+  setText('kgDay', Math.round(totalKgDay) + ' kg');
+  setText('revDay', fmtRp(revDay));
+  setText('kgRegLabel', Math.round(kgReg) + ' kg');
+  setText('kgExpLabel', Math.round(kgExp) + ' kg');
+  setText('revReg', fmtRp(kgReg * priceReg));
+  setText('revExp', fmtRp(kgExp * priceExp));
+  setText('dryerCap', '~' + Math.round(dryPerDay) + ' kg / hari (' + (dryCount > 0 && dryCap > 0 ? (dryPerDay >= totalKgDay ? '✓ cukup' : '⚠ kurang') : '—') + ')');
+  setText('revWeek', fmtRp(revWeek));
+  setText('revMonth', fmtRp(revMonth));
+  setText('revYear', fmtRp(revYear));
+
+  // Costs
+  const cSalary    = getVal('cSalary');
+  const cRent      = getVal('cRent');
+  const cDepr      = getVal('cDepr');
+  const cMisc      = getVal('cMisc');
+  const utilPctVal = getVal('cUtilPct') / 100;
+  const supplyPctVal = getVal('cSupplyPct') / 100;
+
+  const cUtil   = revMonth * utilPctVal;
+  const cSupply = revMonth * supplyPctVal;
+
+  setText('utilCostEst', fmtRp(cUtil));
+  setText('supplyCostEst', fmtRp(cSupply));
+
+  const totalCost = cSalary + cRent + cDepr + cMisc + cUtil + cSupply;
+  const netProfit = revMonth - totalCost;
+  const margin    = revMonth > 0 ? Math.round((netProfit / revMonth) * 100) : 0;
+
+  setText('totalCost', fmtRp(totalCost));
+  setText('netProfit', fmtRp(netProfit));
+  setText('marginBadge', margin + '%');
+
+  const profitEl = document.getElementById('netProfit').closest('.total-row');
+  if (netProfit < 0) {
+    profitEl.style.background = '#FEE2E2';
+    profitEl.style.borderColor = 'rgba(220,38,38,.2)';
+    document.getElementById('netProfit').style.color = '#991B1B';
+    document.querySelector('.total-label', profitEl).style.color = '#991B1B';
+    document.getElementById('marginBadge').style.background = '#DC2626';
+  } else {
+    profitEl.style.background = 'var(--teal-light)';
+    profitEl.style.borderColor = 'rgba(13,157,131,.25)';
+    document.getElementById('netProfit').style.color = 'var(--teal-dark)';
+    document.getElementById('marginBadge').style.background = 'var(--teal)';
+  }
+}
+
+recalc();
+</script>
+</body>
+</html>
